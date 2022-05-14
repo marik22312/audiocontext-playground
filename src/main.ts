@@ -1,10 +1,13 @@
 import "./style.css";
+import {} from "./visualizer"
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 const pianoDiv = document.querySelector<HTMLDivElement>("#piano")!;
 const button = document.querySelector<HTMLButtonElement>("#play");
 const kickButton = document.querySelector<HTMLButtonElement>("#kick");
 const snareButton = document.querySelector<HTMLButtonElement>("#snare");
+const canvasDiv = document.querySelector<HTMLCanvasElement>("#canvas")!;
+const canvasContext = canvasDiv.getContext("2d");
 
 const notesChart = [
   {
@@ -66,6 +69,7 @@ app.innerHTML = `
 `;
 
 const audioContext = new AudioContext();
+const audioAnalyzer = audioContext.createAnalyser();
 
 const TRACK_LENGTH_SECONDS = 0.2;
 const buffer = audioContext.createBuffer(
@@ -103,6 +107,8 @@ snareButton?.addEventListener("click", () => {
   whitenoiseSource.start();
 });
 
+
+
 kickButton?.addEventListener("click", () => {
   const kickOsc = audioContext.createOscillator();
   kickOsc.frequency.setValueAtTime(150, 0);
@@ -118,10 +124,12 @@ kickButton?.addEventListener("click", () => {
     audioContext.currentTime + 0.5
   );
 
+  kickOsc.connect(audioAnalyzer)
   kickOsc.connect(kickGain);
   kickGain.connect(primaryGainNode);
   kickOsc.start();
   kickOsc.stop(audioContext.currentTime + 0.3);
+
 });
 
 const NOTE_ATTACK_TIME = 0.2;
