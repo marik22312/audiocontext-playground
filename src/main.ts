@@ -146,7 +146,7 @@ notesChart.forEach((note) => {
     const oscilator = audioContext.createOscillator();
     const noteGain = audioContext.createGain();
     noteGain.gain.setValueAtTime(0, 0);
-    noteGain.gain.linearRampToValueAtTime(1, now + NOTE_ATTACK_TIME);
+    noteGain.gain.linearRampToValueAtTime(0.5, now + NOTE_ATTACK_TIME);
 	noteGain.gain.linearRampToValueAtTime(NOTE_SUSTAIN_LEVEL, now + NOTE_ATTACK_TIME + NOTE_DECAY_TIME);
 	noteGain.gain.setValueAtTime(NOTE_SUSTAIN_LEVEL, now + 1 - NOTE_RELEASE_TIME)
 	noteGain.gain.linearRampToValueAtTime(0, now + 1);

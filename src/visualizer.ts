@@ -15,6 +15,34 @@ const analyzer = audioContext.createAnalyser();
 let animationFrameRequest: number;
 
 let audioStream: MediaStream;
+const drawOscillator = (dataArray: any, bufferLength: any) => {
+  animationFrameRequest = requestAnimationFrame(() =>
+    drawOscillator(dataArray, bufferLength)
+  );
+  analyzer.getByteTimeDomainData(dataArray);
+  ctx.fillStyle = "rgb(200, 200, 200)";
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "rgb(0, 0, 0)";
+  ctx.beginPath();
+  var sliceWidth = (WIDTH * 1.0) / bufferLength;
+  var x = 0;
+
+  for (var i = 0; i < bufferLength; i++) {
+    var v = dataArray[i] / 128.0;
+    var y = (v * HEIGHT) / 2;
+
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+
+    x += sliceWidth;
+  }
+  ctx.lineTo(canvas.width, canvas.height / 2);
+  ctx.stroke();
+};
 
 const connectVisualizer = async () => {
   console.log("Start visualizer");
@@ -40,39 +68,11 @@ const connectVisualizer = async () => {
 
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-  const draw = () => {
-	  console.log('Draw')
-    animationFrameRequest = requestAnimationFrame(draw);
-    analyzer.getByteTimeDomainData(dataArray);
-    ctx.fillStyle = "rgb(200, 200, 200)";
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgb(0, 0, 0)";
-    ctx.beginPath();
-    var sliceWidth = (WIDTH * 1.0) / bufferLength;
-    var x = 0;
-
-    for (var i = 0; i < bufferLength; i++) {
-      var v = dataArray[i] / 128.0;
-      var y = (v * HEIGHT) / 2;
-
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-
-      x += sliceWidth;
-    }
-    ctx.lineTo(canvas.width, canvas.height / 2);
-    ctx.stroke();
-
-};
-	draw();
+  drawOscillator(dataArray, bufferLength);
 };
 
 const stopVisualizer = () => {
-animationFrameRequest && cancelAnimationFrame(animationFrameRequest);
+  animationFrameRequest && cancelAnimationFrame(animationFrameRequest);
   audioStream.getTracks().forEach((t) => t.stop());
 };
 
