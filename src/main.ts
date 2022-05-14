@@ -57,7 +57,7 @@ const notesChart = [
   },
   {
     name: "C | Do",
-	frequency: 523.25,
+    frequency: 523.25,
   },
 ];
 
@@ -124,21 +124,32 @@ kickButton?.addEventListener("click", () => {
   kickOsc.stop(audioContext.currentTime + 0.3);
 });
 
+const NOTE_ATTACK_TIME = 0.2;
+const NOTE_DECAY_TIME = 0.3;
+const NOTE_SUSTAIN_LEVEL = 0.7;
+const NOTE_RELEASE_TIME = 0.2;
 
-notesChart.forEach(note => {
-	const button = document.createElement("button");
-	button.innerText = note.name;
-	button.addEventListener("click", () => {
-		const oscilator = audioContext.createOscillator();
-		const noteGain = audioContext.createGain();
-		noteGain.gain.setValueAtTime(0.2, 0)
-		oscilator.type = "square"
-		oscilator.frequency.setValueAtTime(note.frequency, 0);
-		oscilator.connect(primaryGainNode);
-		oscilator.start();
-		oscilator.stop(audioContext.currentTime + 1);
-	})
+notesChart.forEach((note) => {
+  const button = document.createElement("button");
+  button.innerText = note.name;
+  button.addEventListener("click", () => {
+    const now = audioContext.currentTime;
 
-	pianoDiv.appendChild(button);
+    const oscilator = audioContext.createOscillator();
+    const noteGain = audioContext.createGain();
+    noteGain.gain.setValueAtTime(0, 0);
+    noteGain.gain.linearRampToValueAtTime(1, now + NOTE_ATTACK_TIME);
+	noteGain.gain.linearRampToValueAtTime(NOTE_SUSTAIN_LEVEL, now + NOTE_ATTACK_TIME + NOTE_DECAY_TIME);
+	noteGain.gain.setValueAtTime(NOTE_SUSTAIN_LEVEL, now + 1 - NOTE_RELEASE_TIME)
+	noteGain.gain.linearRampToValueAtTime(0, now + 1);
+    
+	oscilator.type = "square";
+    oscilator.frequency.setValueAtTime(note.frequency, 0);
+	oscilator.connect(noteGain);
+    noteGain.connect(primaryGainNode);
+    oscilator.start();
+    oscilator.stop(audioContext.currentTime + 1);
+  });
 
-})
+  pianoDiv.appendChild(button);
+});
