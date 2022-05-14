@@ -9,60 +9,7 @@ const snareButton = document.querySelector<HTMLButtonElement>("#snare");
 const canvasDiv = document.querySelector<HTMLCanvasElement>("#canvas")!;
 const canvasContext = canvasDiv.getContext("2d");
 
-const notesChart = [
-  {
-    name: "C | Do",
-    frequency: 261.63,
-  },
-  {
-    name: "C#",
-    frequency: 277.18,
-  },
-  {
-    name: "D | Ré",
-    frequency: 293.66,
-  },
-  {
-    name: "D#",
-    frequency: 311.13,
-  },
-  {
-    name: "E | Mi",
-    frequency: 329.63,
-  },
-  {
-    name: "F | Fa",
-    frequency: 349.23,
-  },
-  {
-    name: "F#",
-    frequency: 369.99,
-  },
-  {
-    name: "G | Sol",
-    frequency: 392.0,
-  },
-  {
-    name: "G#",
-    frequency: 415.3,
-  },
-  {
-    name: "A | La",
-    frequency: 440.0,
-  },
-  {
-    name: "A#",
-    frequency: 466.16,
-  },
-  {
-    name: "B | Si",
-    frequency: 493.88,
-  },
-  {
-    name: "C | Do",
-    frequency: 523.25,
-  },
-];
+import notesChart from './notes.json'
 
 app.innerHTML = `
   <h1>Playground</h1>

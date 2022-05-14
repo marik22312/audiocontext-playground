@@ -1,3 +1,5 @@
+import notesChart from "./notes.json";
+
 const startButton = document.querySelector<HTMLButtonElement>("#start");
 const canvas = document.querySelector<HTMLCanvasElement>("#canvas");
 const audioElement = document.querySelector<HTMLAudioElement>("#audioOutput");
@@ -11,6 +13,8 @@ const HEIGHT = 150;
 const ctx = canvas.getContext("2d")!;
 const audioContext = new AudioContext();
 const analyzer = audioContext.createAnalyser();
+const primaryGainNode = audioContext.createGain();
+primaryGainNode.connect(audioContext.destination);
 
 let animationFrameRequest: number;
 
@@ -44,6 +48,19 @@ const drawOscillator = (dataArray: any, bufferLength: any) => {
   ctx.stroke();
 };
 
+const drawWaveformFromSource = (
+  source: MediaStreamAudioSourceNode | MediaElementAudioSourceNode
+) => {
+  source.connect(audioContext.destination);
+  analyzer.fftSize = 2048;
+  var bufferLength = analyzer.frequencyBinCount;
+  var dataArray = new Uint8Array(bufferLength);
+
+  ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+  drawOscillator(dataArray, bufferLength);
+};
+
 const connectVisualizer = async () => {
   console.log("Start visualizer");
   audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -58,17 +75,8 @@ const connectVisualizer = async () => {
 
   source.connect(gainNode);
   source.connect(analyzer);
-  analyzer.connect(gainNode);
   gainNode.connect(audioContext.destination);
-
-  analyzer.fftSize = 2048;
-  analyzer.fftSize = 2048;
-  var bufferLength = analyzer.frequencyBinCount;
-  var dataArray = new Uint8Array(bufferLength);
-
-  ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
-  drawOscillator(dataArray, bufferLength);
+  drawWaveformFromSource(source);
 };
 
 const stopVisualizer = () => {
