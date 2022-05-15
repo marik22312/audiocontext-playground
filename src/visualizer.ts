@@ -48,10 +48,8 @@ const drawOscillator = (dataArray: any, bufferLength: any) => {
   ctx.stroke();
 };
 
-const drawWaveformFromSource = (
-  source: MediaStreamAudioSourceNode | MediaElementAudioSourceNode
-) => {
-  source.connect(audioContext.destination);
+const drawWaveformFromSource = (node: AudioNode) => {
+  node.connect(analyzer);
   analyzer.fftSize = 2048;
   var bufferLength = analyzer.frequencyBinCount;
   var dataArray = new Uint8Array(bufferLength);
@@ -64,19 +62,22 @@ const drawWaveformFromSource = (
 const connectVisualizer = async () => {
   console.log("Start visualizer");
   audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  audioElement.srcObject = audioStream;
-  audioElement.play();
 
   const source = audioContext.createMediaStreamSource(audioStream);
-  const gainNode = audioContext.createBiquadFilter();
-  gainNode.type = "highpass";
-  gainNode.frequency.value = 15000;
-  gainNode.gain.value = 0.5;
+  const gainNode = audioContext.createGain();
+  const delayNode = audioContext.createDelay();
+  delayNode.delayTime.value = 1;
+  gainNode.gain.setValueAtTime(1, 0);
 
-  source.connect(gainNode);
-  source.connect(analyzer);
+  // source -> delay -> gain -> out
+  // Connect to delay
+  source.connect(delayNode);
+  // Connect delay to gain
+  delayNode.connect(gainNode);
+  // Connect gain to output
   gainNode.connect(audioContext.destination);
-  drawWaveformFromSource(source);
+
+  drawWaveformFromSource(gainNode);
 };
 
 const stopVisualizer = () => {
