@@ -9,7 +9,12 @@
 <body>
 	<button id="start">Start</button>
 	<canvas id="canvas"></canvas>
+	<canvas id="staticCanvas"></canvas>
 	<audio id="audioOutput"></audio>
+	<div>
+		<input type="range" min="0" max="5" step="0.1" id="delayRange" value="0"/>
+		<span>Delay Value: <span id="delayValue">0</span></span>
+	</div>
 
 	<script type="module" src="/src/visualizer.ts"></script>
 </body>

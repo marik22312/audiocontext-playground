@@ -1,5 +1,5 @@
 import "./style.css";
-import {} from "./visualizer"
+import {connectWaveformVisualizer} from "./helpers/waveform"
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 const pianoDiv = document.querySelector<HTMLDivElement>("#piano")!;
@@ -7,7 +7,6 @@ const button = document.querySelector<HTMLButtonElement>("#play");
 const kickButton = document.querySelector<HTMLButtonElement>("#kick");
 const snareButton = document.querySelector<HTMLButtonElement>("#snare");
 const canvasDiv = document.querySelector<HTMLCanvasElement>("#canvas")!;
-const canvasContext = canvasDiv.getContext("2d");
 
 import notesChart from './notes.json'
 
@@ -38,7 +37,6 @@ button?.addEventListener("click", () => {
   const whitenoiseSource = audioContext.createBufferSource();
   whitenoiseSource.buffer = buffer;
   whitenoiseSource.connect(primaryGainNode);
-  console.log("Clicked");
   whitenoiseSource.start();
 });
 
@@ -51,6 +49,7 @@ snareButton?.addEventListener("click", () => {
   const whitenoiseSource = audioContext.createBufferSource();
   whitenoiseSource.buffer = buffer;
   whitenoiseSource.connect(snareFilter);
+  connectWaveformVisualizer(whitenoiseSource, audioContext, canvasDiv);
   whitenoiseSource.start();
 });
 
@@ -74,6 +73,7 @@ kickButton?.addEventListener("click", () => {
   kickOsc.connect(audioAnalyzer)
   kickOsc.connect(kickGain);
   kickGain.connect(primaryGainNode);
+  connectWaveformVisualizer(kickGain, audioContext, canvasDiv);
   kickOsc.start();
   kickOsc.stop(audioContext.currentTime + 0.3);
 
@@ -98,10 +98,11 @@ notesChart.forEach((note) => {
 	noteGain.gain.setValueAtTime(NOTE_SUSTAIN_LEVEL, now + 1 - NOTE_RELEASE_TIME)
 	noteGain.gain.linearRampToValueAtTime(0, now + 1);
     
-	oscilator.type = "square";
+	oscilator.type = "sine";
     oscilator.frequency.setValueAtTime(note.frequency, 0);
 	oscilator.connect(noteGain);
     noteGain.connect(primaryGainNode);
+	connectWaveformVisualizer(noteGain, audioContext, canvasDiv);
     oscilator.start();
     oscilator.stop(audioContext.currentTime + 1);
   });
