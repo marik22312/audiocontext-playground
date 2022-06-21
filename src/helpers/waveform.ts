@@ -51,12 +51,14 @@ export const connectWaveformVisualizer = (
   canvas: HTMLCanvasElement,
 ) => {
   const ctx = canvas.getContext("2d");
+  const analyser = audioCtx.createAnalyser();
 
   if (!ctx) {
     console.error("Could not get canvas context");
-    return;
+    return {
+		analyser
+	};
   }
-  const analyser = audioCtx.createAnalyser();
   source.connect(analyser);
   analyser.fftSize = 2048;
   var bufferLength = analyser.frequencyBinCount;
@@ -65,6 +67,10 @@ export const connectWaveformVisualizer = (
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
   drawOscillator(canvas, analyser, dataArray, bufferLength);
+
+  return {
+	  analyser
+  }
 };
 
 let animationFrameRequest: any;

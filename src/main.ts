@@ -49,7 +49,8 @@ snareButton?.addEventListener("click", () => {
   const whitenoiseSource = audioContext.createBufferSource();
   whitenoiseSource.buffer = buffer;
   whitenoiseSource.connect(snareFilter);
-  connectWaveformVisualizer(whitenoiseSource, audioContext, canvasDiv);
+  const {analyser} = connectWaveformVisualizer(whitenoiseSource, audioContext, canvasDiv);
+
   whitenoiseSource.start();
 });
 
@@ -102,7 +103,7 @@ notesChart.forEach((note) => {
     oscilator.frequency.setValueAtTime(note.frequency, 0);
 	oscilator.connect(noteGain);
     noteGain.connect(primaryGainNode);
-	connectWaveformVisualizer(noteGain, audioContext, canvasDiv);
+	const {analyser} = connectWaveformVisualizer(noteGain, audioContext, canvasDiv);
     oscilator.start();
     oscilator.stop(audioContext.currentTime + 1);
   });
