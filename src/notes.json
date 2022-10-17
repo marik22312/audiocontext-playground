@@ -1,53 +1,65 @@
 [
 	{
+		"id": "C4",
 	  "name": "C | Do",
 	  "frequency": 261.63
 	},
 	{
+		"id": "C4#",
 	  "name": "C#",
 	  "frequency": 277.18
 	},
 	{
+		"id": "D4",
 	  "name": "D | Ré",
 	  "frequency": 293.66
 	},
 	{
+		"id": "D4#",
 	  "name": "D#",
 	  "frequency": 311.13
 	},
 	{
+		"id": "E4",
 	  "name": "E | Mi",
 	  "frequency": 329.63
 	},
 	{
+		"id": "F4",
 	  "name": "F | Fa",
 	  "frequency": 349.23
 	},
 	{
+		"id": "F4#",
 	  "name": "F#",
 	  "frequency": 369.99
 	},
 	{
+		"id": "G4",
 	  "name": "G | Sol",
 	  "frequency": 392.0
 	},
 	{
+		"id": "G4#",
 	  "name": "G#",
 	  "frequency": 415.3
 	},
 	{
+		"id": "A4",
 	  "name": "A | La",
 	  "frequency": 440.0
 	},
 	{
+		"id": "A4#",
 	  "name": "A#",
 	  "frequency": 466.16
 	},
 	{
+		"id": "B4",
 	  "name": "B | Si",
 	  "frequency": 493.88
-	},
-	{
+	}, {
+		"id": "C5",
 	  "name": "C | Do",
 	  "frequency": 523.25
 	}

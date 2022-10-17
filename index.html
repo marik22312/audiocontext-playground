@@ -7,16 +7,26 @@
     <title>Vite App</title>
   </head>
   <body>
-    <div id="app"></div>
-	<div>
-		<button id="play">play white noise</button>
-		<button id="snare">Snare</button>
-		<button id="kick">Kick</button>
-	</div>
-	<div id="piano"></div>
-	<div><a href="/microphone-visualiser/">Microphone Visualiser</a></div>
-	<canvas id="canvas"></canvas>
-	<div id="piano"></div>
+    <h1>My browser is a musical instrument?</h1>
+    <a href="/piano.html"><button>Piano demo</button></a>
+    <a href="/microphone-visualiser/"><button>Microphone Visualiser</button></a>
+    <a href="/drumkit/"><button>Drum kit Demo</button></a>
+    <a href="/note/"><button>Note Demo</button></a>
+    <button id="fourFourtyDemo">440Hz demo</button>
+    <button id="play">Whitenoise</button>
+    <button id="filteredNoise">Filtered Whitenoise</button>
+    <button id="A4NoEnvelope">A4 without envelope</button>
+    <button id="A4Envelope">A4 with envelope</button>
+    <div>
+      <canvas id="canvas"></canvas>
+    </div>
     <script type="module" src="/src/main.ts"></script>
+
+    <style>
+      body {
+        background: #222;
+        color: #fff;
+      }
+    </style>
   </body>
 </html>
