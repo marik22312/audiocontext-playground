@@ -48,53 +48,64 @@ export const drawLineSegment = (
 export const connectWaveformVisualizer = (
   source: AudioNode,
   audioCtx: AudioContext,
-  canvas: HTMLCanvasElement,
+  canvas: HTMLCanvasElement
 ) => {
   const ctx = canvas.getContext("2d");
-  const analyser = audioCtx.createAnalyser();
+  const analyser = new AnalyserNode(audioCtx, { fftSize: 2048 });
 
   if (!ctx) {
     console.error("Could not get canvas context");
     return {
-		analyser
-	};
+      analyser,
+    };
   }
   source.connect(analyser);
-  analyser.fftSize = 2048;
-  var bufferLength = analyser.frequencyBinCount;
-  var dataArray = new Uint8Array(bufferLength);
+  var dataArray = new Uint8Array(analyser.fftSize);
 
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-  drawOscillator(canvas, analyser, dataArray, bufferLength);
+  drawOscillator(canvas, analyser, dataArray, analyser.fftSize);
 
   return {
-	  analyser
-  }
+    analyser,
+  };
 };
 
 let animationFrameRequest: any;
+let drawVisual: any;
+export const stopWaveform = () => {
+  animationFrameRequest && cancelAnimationFrame(animationFrameRequest);
+  drawVisual && cancelAnimationFrame(drawVisual);
+};
+
 const drawOscillator = (
   canvas: HTMLCanvasElement,
   analyser: AnalyserNode,
-  dataArray: any,
-  bufferLength: any
+  dataArray: Uint8Array,
+  bufferLength: number
 ) => {
+  animationFrameRequest = requestAnimationFrame(() =>
+    drawOscillator(canvas, analyser, dataArray, analyser.fftSize)
+  );
+  analyser.getByteTimeDomainData(dataArray);
+  draw(canvas, bufferLength, dataArray);
+};
+
+function draw(
+  canvas: HTMLCanvasElement,
+  bufferLength: any,
+  dataArray: Uint8Array
+) {
   const ctx = canvas.getContext("2d");
 
   if (!ctx) {
     console.error("Could not get canvas context");
-    return;
+    return alert("Could not get canvas context");
   }
-
-  animationFrameRequest = requestAnimationFrame(() =>
-    drawOscillator(canvas, analyser, dataArray, bufferLength)
-  );
-  analyser.getByteTimeDomainData(dataArray);
-  ctx.fillStyle = "rgb(200, 200, 200)";
+  ctx.fillStyle = "#222";
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
   ctx.lineWidth = 2;
-  ctx.strokeStyle = "rgb(0, 0, 0)";
+  ctx.strokeStyle = "#fff";
   ctx.beginPath();
   var sliceWidth = (WIDTH * 1.0) / bufferLength;
   var x = 0;
@@ -113,4 +124,51 @@ const drawOscillator = (
   }
   ctx.lineTo(canvas.width, canvas.height / 2);
   ctx.stroke();
+}
+
+export const drawFrequencyBarChart = (
+  audioContext: AudioContext,
+  source: AudioNode,
+  canvas: HTMLCanvasElement
+) => {
+  const canvasContext = canvas.getContext("2d");
+  const analyser = new AnalyserNode(audioContext, { fftSize: 256 });
+  source.connect(analyser);
+  if (!canvasContext) {
+    console.error("Could not get canvas context");
+    return alert("Could not get canvas context");
+  }
+  
+  const dataArray = new Uint8Array(analyser.frequencyBinCount);
+  
+  canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
+  drawBarChart(analyser, canvasContext, dataArray);
+};
+
+const drawBarChart = (
+  analyser: AnalyserNode,
+  canvasContext: CanvasRenderingContext2D,
+  dataArray: Uint8Array
+) => {
+  const bufferLength = analyser.frequencyBinCount;
+  analyser.getByteFrequencyData(dataArray);
+  drawVisual = requestAnimationFrame(() =>
+    drawBarChart(analyser, canvasContext, dataArray)
+  );
+
+  canvasContext.fillStyle = "rgb(0, 0, 0)";
+  canvasContext.fillRect(0, 0, WIDTH, HEIGHT);
+  const barWidth = (WIDTH / bufferLength) * 2.5;
+  let barHeight;
+  let x = 0;
+  console.log(dataArray.toString(), dataArray.length);
+  for (let i = 0; i < bufferLength; i++) {
+    barHeight = dataArray[i] / 2;
+
+    canvasContext.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+	const y = HEIGHT - barHeight / 2;
+    canvasContext.fillRect(x, y, barWidth, barHeight / 2);
+
+    x += barWidth + 1;
+  }
 };
