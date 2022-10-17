@@ -1,5 +1,5 @@
 import "./style.css";
-import { connectWaveformVisualizer, stopWaveform } from "./helpers/waveform";
+import { connectWaveformVisualizer } from "./helpers/waveform";
 import {KickNode, SnareNode} from './helpers/Drum'
 
 const button = document.querySelector<HTMLButtonElement>("#play");
@@ -16,7 +16,6 @@ const fourFourtyDemo =
 const canvasDiv = document.querySelector<HTMLCanvasElement>("#canvas")!;
 
 const audioContext = new AudioContext();
-const audioAnalyzer = audioContext.createAnalyser();
 
 fourFourtyDemo?.addEventListener("click", () => {
   audioContext.resume().then(() => {
@@ -112,7 +111,7 @@ highHat?.addEventListener("click", () => {
   const whitenoiseSource = audioContext.createBufferSource();
   whitenoiseSource.buffer = buffer;
   whitenoiseSource.connect(snareFilter);
-  const { analyser } = connectWaveformVisualizer(
+  connectWaveformVisualizer(
     whitenoiseSource,
     audioContext,
     canvasDiv
