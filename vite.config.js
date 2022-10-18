@@ -10,6 +10,7 @@ export default defineConfig({
         drumkit: resolve(__dirname, 'drumkit/index.html'),
 	['microphone-visualiser']: resolve(__dirname, 'microphone-visualiser/index.html'),
 	note: resolve(__dirname, 'note/index.html'),
+	piano: resolve(__dirname, 'piano.html'),
       }
     }
   }
